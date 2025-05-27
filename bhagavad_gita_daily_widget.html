@@ -1,0 +1,171 @@
+
+<!DOCTYPE html>
+<html lang="ta">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>தினம் ஒரு பகவத் கீதை</title>
+<style>
+  body {
+    font-family: 'Noto Sans Tamil', sans-serif;
+    background: #f9fafb;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+  }
+
+  .gita-widget {
+    background: white;
+    width: 400px;
+    padding: 25px 30px;
+    border-radius: 14px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+    text-align: center;
+    color: #2e2e2e;
+    user-select: none;
+  }
+
+  .gita-widget h2 {
+    font-size: 22px;
+    color: #065f46;
+    margin-bottom: 12px;
+  }
+
+  .sloka {
+    font-size: 19px;
+    font-weight: 700;
+    margin: 18px 0 12px 0;
+    color: #111;
+    white-space: pre-line;
+  }
+
+  .meaning {
+    font-size: 16px;
+    color: #444;
+    line-height: 1.5;
+    margin-bottom: 18px;
+  }
+
+  .controls {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+    margin-bottom: 12px;
+  }
+
+  button {
+    background: #065f46;
+    color: white;
+    border: none;
+    padding: 10px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.3s ease;
+    user-select: none;
+  }
+
+  button:hover {
+    background: #0f766e;
+  }
+
+  audio {
+    width: 100%;
+    outline: none;
+    margin-bottom: 10px;
+    border-radius: 8px;
+  }
+
+  .footer {
+    font-size: 13px;
+    color: #777;
+  }
+</style>
+</head>
+<body>
+
+<div id="gita-widget" class="gita-widget" aria-live="polite">
+  <h2>தினம் ஒரு பகவத் கீதை</h2>
+  <div class="sloka" id="sloka">சிலோகம் இங்கே</div>
+  <div class="meaning" id="meaning">அர்த்தம் இங்கே</div>
+
+  <audio id="audio" controls preload="none">
+    <source id="audioSource" src="" type="audio/mpeg">
+    உங்கள் உலாவியில் ஆடியோ ஆதரவு இல்லை.
+  </audio>
+
+  <div class="controls">
+    <button aria-label="முந்தைய ஸ்லோகத்திற்கு" id="prevBtn">முந்தைய</button>
+    <button aria-label="அடுத்த ஸ்லோகத்திற்கு" id="nextBtn">அடுத்த</button>
+  </div>
+
+  <div class="footer">– பகவத் கீதை</div>
+</div>
+
+<script>
+  const verses = [
+    {
+      sloka: "யதா யதா ஹி ததாஹி ததா தர்ஷ்டவ்யம் சந்ந யதா சந்நயம் ।\nயதா யதா ஹி நட்மாப்ரதீபோ ಭತ್ಯಹ್ ஸ்வபாவ: ஸ்வரூபேಣா ।।",
+      meaning: "எப்போதும் நேர்மையானது இல்லை என்றால், அந்த நேர்மையை மீண்டும் நிலைநாட்ட தேவன் பிறக்கும்.",
+      audio: "https://example.com/audio1.mp3"
+    },
+    {
+      sloka: "காமேஷ்வர சுவரூபோ விஶ்வஹித்யா த்வம் ஸர்வம் ப்ரபு ।\nப்ரஹ்மா, விஷ்ணு, சரஸ் வா ஹி ஸ்வரூபாயாம் ப்ரபு பிரகாசதே ।।",
+      meaning: "நீ எல்லா உயிர்களின் உள்ளே உள்ள பேராசிரியர், நீ உயிர்களின் மூலமானவன்.",
+      audio: "https://example.com/audio2.mp3"
+    },
+    {
+      sloka: "கல்மஷ்மஹேதா ந சஹச்ர யத்நேன ப்ரபுலாப்தி கமா ।\nந ஹி ஜந்மன்ச சுழியத் ரதா வா யத்வோ மோகா ஹேதா ।।",
+      meaning: "வெறும் முயற்சியால் அடைய முடியாத நன்மைகள் பிறப்பின் வலியால் அடைவதில்லை.",
+      audio: "https://example.com/audio3.mp3"
+    }
+  ];
+
+  function getDailyIndex() {
+    const startDate = new Date(2025, 0, 1);
+    const today = new Date();
+    const diffTime = today - startDate;
+    const diffDays = Math.floor(diffTime / (1000 * 60 * 60 * 24));
+    return diffDays % verses.length;
+  }
+
+  let currentIndex = getDailyIndex();
+
+  const slokaEl = document.getElementById('sloka');
+  const meaningEl = document.getElementById('meaning');
+  const audioEl = document.getElementById('audio');
+  const audioSourceEl = document.getElementById('audioSource');
+
+  function loadVerse(index) {
+    const verse = verses[index];
+    slokaEl.textContent = verse.sloka;
+    meaningEl.textContent = verse.meaning;
+
+    if(verse.audio){
+      audioSourceEl.src = verse.audio;
+      audioEl.load();
+      audioEl.pause();
+    } else {
+      audioSourceEl.src = "";
+      audioEl.load();
+      audioEl.pause();
+    }
+  }
+
+  document.getElementById('nextBtn').addEventListener('click', () => {
+    currentIndex = (currentIndex + 1) % verses.length;
+    loadVerse(currentIndex);
+  });
+
+  document.getElementById('prevBtn').addEventListener('click', () => {
+    currentIndex = (currentIndex - 1 + verses.length) % verses.length;
+    loadVerse(currentIndex);
+  });
+
+  loadVerse(currentIndex);
+</script>
+
+</body>
+</html>
